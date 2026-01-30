@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 50px;
+}
+
+h1, h2 {
+    color: rgb(32, 66, 117);
+}
+
+input {
+    padding: 5px;
+    width: 200px;
+}
+
+button {
+    padding: 5px 15px;
+    margin-top: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(48, 68, 112);
+}

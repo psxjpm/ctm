@@ -1,0 +1,56 @@
+
+
+services:
+  web:
+    image: php:8.2-apache
+    container_name: hospital_web
+    volumes:
+      - ./app:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: rootpassword
+      DB_NAME: hospital
+    command: >
+      bash -c "docker-php-ext-install mysqli &&
+               apache2-foreground"
+
+  db:
+    image: mysql:8.0
+    container_name: hospital_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: hospital
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # 注意：如果初始化由于某些原因失败了，这里挂载的sql文件可能不会再次自动运行
+      - ./47e4b933-a890-4f95-a955-bcbcfdeeaf82.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # 添加 phpMyAdmin 服务
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+
+volumes:
+  db_data:
+
+
