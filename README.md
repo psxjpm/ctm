@@ -1,6 +1,6 @@
 # COMP4039-DIS Docker
 
-## author: Stuart Reeves
+## author: anon
 
 Docker files for COMP4039-DIS (Databases, Interfaces and Software Design Principles) L4 module.
 
