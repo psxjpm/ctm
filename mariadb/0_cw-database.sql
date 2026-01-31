@@ -1,11 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 26, 2023 at 02:38 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Host: mariadb
+-- Generation Time: Dec 10, 2025 at 05:17 PM
+-- Server version: 10.8.8-MariaDB-1:10.8.8+maria~ubu2204
+-- PHP Version: 8.3.27
+
+CREATE DATABASE IF NOT EXISTS Hospital;
+USE Hospital;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +21,54 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `hospital`
+-- Database: `Hospital`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_log`
+--
+
+CREATE TABLE `audit_log` (
+  `audit_id` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `action` varchar(100) NOT NULL,
+  `details` text DEFAULT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `audit_log`
+--
+
+INSERT INTO `audit_log` (`audit_id`, `username`, `action`, `details`, `timestamp`) VALUES
+(11, 'moorland', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-08 12:36:05'),
+(12, 'moorland', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-08 12:36:05'),
+(13, 'moorland', 'PERMIT_REQUEST', 'Requested Monthly for car FM65 CUW', '2025-12-08 12:37:04'),
+(14, 'jelina', 'PERMIT_APPROVE', 'Approved permit for moorland, Permit No: 1 (Type: Monthly)', '2025-12-08 12:37:41'),
+(15, 'moorland', 'PERMIT_REQUEST', 'Requested Monthly for car FM65 CUW', '2025-12-08 13:05:51'),
+(16, 'jelina', 'PERMIT_APPROVE', 'Approved permit for moorland, Permit No: 1 (Type: Monthly)', '2025-12-08 13:06:08'),
+(17, 'jelina', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-08 13:44:23'),
+(18, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-08 13:44:23'),
+(19, 'jelina', 'SEARCH_PATIENT', 'Search keyword: Chao Chen', '2025-12-08 13:44:32'),
+(20, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W21814', '2025-12-08 13:44:32'),
+(23, 'moorland', 'UPDATE_PROFILE', 'Changed username to moorland', '2025-12-08 15:00:32'),
+(24, 'moorland', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-08 15:27:11'),
+(25, 'moorland', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-08 15:27:11'),
+(26, 'moorland', 'PERMIT_REQUEST', 'Requested Monthly for car FM65 CUW', '2025-12-08 15:46:53'),
+(27, 'jelina', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-09 14:31:23'),
+(28, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-09 14:31:23'),
+(29, 'jelina', 'SEARCH_PATIENT', 'Search keyword: Chao Chen', '2025-12-09 14:31:49'),
+(30, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W21814', '2025-12-09 14:31:49'),
+(31, 'jelina', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-10 13:01:32'),
+(32, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-10 13:01:32'),
+(33, 'jelina', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-10 13:03:56'),
+(34, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-10 13:03:56'),
+(35, 'jelina', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-10 13:04:13'),
+(36, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-10 13:04:13'),
+(37, 'jelina', 'SEARCH_PATIENT', 'Search keyword: W20616', '2025-12-10 13:04:30'),
+(38, 'jelina', 'VIEW_PATIENT', 'Viewed patient NHS: W20616', '2025-12-10 13:04:30');
 
 -- --------------------------------------------------------
 
@@ -53,6 +102,55 @@ INSERT INTO `doctor` (`staffno`, `firstname`, `lastname`, `specialisation`, `qua
 ('QM267', 'Andrew', 'Xin', 0, 'CCT', 58000, 0, 1, '44 Dunlop Avenue, Lenton, Nottingham NG1 5AW'),
 ('QM300', 'Joy', 'Liz', 0, 'CCT', 52000, 1, 0, '55 Wishford Avenue, Lenton, Nottingham'),
 ('QT001', 'Martin', 'Peter', 0, NULL, 48000, 0, 0, '47 Derby Road, Nottingham, NG1 5AW');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logins`
+--
+
+CREATE TABLE `logins` (
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('doctor','administrator') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `logins`
+--
+
+INSERT INTO `logins` (`username`, `password`, `role`) VALUES
+('jelina', 'iron99', 'administrator'),
+('mceards', 'lord456', 'doctor'),
+('moorland', 'buzz48', 'doctor');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parking_permit_requests`
+--
+
+CREATE TABLE `parking_permit_requests` (
+  `username` varchar(100) NOT NULL,
+  `car_make` varchar(100) NOT NULL,
+  `car_model` varchar(100) NOT NULL,
+  `car_reg` varchar(20) NOT NULL,
+  `permit_type` enum('Monthly','Yearly') NOT NULL,
+  `cost` decimal(10,2) NOT NULL,
+  `status` enum('Pending','Accepted','Rejected') NOT NULL DEFAULT 'Pending',
+  `permit_number` varchar(100) DEFAULT NULL,
+  `rejection_reason` text DEFAULT NULL,
+  `request_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `approval_date` datetime DEFAULT NULL,
+  `end_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `parking_permit_requests`
+--
+
+INSERT INTO `parking_permit_requests` (`username`, `car_make`, `car_model`, `car_reg`, `permit_type`, `cost`, `status`, `permit_number`, `rejection_reason`, `request_date`, `approval_date`, `end_date`) VALUES
+('moorland', 'Vauxhall', 'Corsa', 'FM65 CUW', 'Monthly', 30.00, 'Pending', NULL, NULL, '2025-12-08 15:46:53', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -241,10 +339,28 @@ INSERT INTO `wardpatientaddmission` (`pid`, `wardid`, `consultantid`, `date`, `t
 --
 
 --
+-- Indexes for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  ADD PRIMARY KEY (`audit_id`);
+
+--
 -- Indexes for table `doctor`
 --
 ALTER TABLE `doctor`
   ADD PRIMARY KEY (`staffno`);
+
+--
+-- Indexes for table `logins`
+--
+ALTER TABLE `logins`
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indexes for table `parking_permit_requests`
+--
+ALTER TABLE `parking_permit_requests`
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `patient`
@@ -281,17 +397,24 @@ ALTER TABLE `ward`
 --
 ALTER TABLE `wardpatientaddmission`
   ADD PRIMARY KEY (`pid`,`wardid`,`consultantid`,`date`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `audit_log`
+--
+ALTER TABLE `audit_log`
+  MODIFY `audit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT for table `test`
+--
+ALTER TABLE `test`
+  MODIFY `testid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-
-CREATE TABLE admin (
-    username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(50) NOT NULL
-);
-
-INSERT INTO admin VALUES ('jelina', 'iron99');
