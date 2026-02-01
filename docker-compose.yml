@@ -1,42 +1,51 @@
-# LAMP docker compose file for COMP4039-DIS Coursework 2
-version: '3'
+version: '3.8'
 
 services:
-  php-apache:
-    #image: php:8.1-apache
-    build:
-      context: ./php-apache
+  web:
+    # image: php:8.1-apache
+    build: .
+    container_name: qmc-web
     ports:
-      - 80:80
+      - "8080:80"
     volumes:
       - ./html:/var/www/html
-    links:
+      - ./php/apache2.conf:/etc/apache2/apache2.conf
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+    depends_on:
       - mariadb
-    restart: always
+    networks:
+      - qmc-network
 
   mariadb:
-    #image: mariadb:10.8
-    build: 
-      context: ./mariadb
-    restart: always
+    image: mariadb:10.6
+    container_name: qmc-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: cw_database
+      MYSQL_USER: qmc_user
+      MYSQL_PASSWORD: qmc_pass
     ports:
-      - 3306
+      - "3306:3306"
     volumes:
       - ./mariadb-data:/var/lib/mysql
-    environment:
-      TZ: "Europe/London"
-      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
-      MYSQL_ROOT_PASSWORD: "rootpwd"
+      - ./mariadb/cw-database.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mariadb/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - qmc-network
 
   phpmyadmin:
-    image: phpmyadmin
-    restart: always
+    image: phpmyadmin/phpmyadmin
+    container_name: qmc-pma
     environment:
       PMA_HOST: mariadb
-      PMA_USER: root
-      PMA_PASSWORD: rootpwd
+      PMA_PORT: 3306
     ports:
-      - 8081:80
+      - "8081:80"
+    depends_on:
+      - mariadb
+    networks:
+      - qmc-network
 
-        #volumes:
-        #    mariadb-data:
+networks:
+  qmc-network:
+    driver: bridge
